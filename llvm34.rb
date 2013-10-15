@@ -109,10 +109,15 @@ class Llvm34 < Formula
     args << "--disable-assertions" if build.include? 'disable-assertions'
 
     args << "--enable-libffi" if build.with? 'libffi'
-
-    system './configure', *args
-    system 'make', 'VERBOSE=1'
-    system 'make', 'VERBOSE=1', 'install'
+    
+    mkdir_p 'build'
+    cd 'build' do
+      system "cmake -G Ninja .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=#{install_prefix}"
+      system "ninja install"
+    end
+    # system './configure', *args
+    # system 'make', 'VERBOSE=1'
+    # system 'make', 'VERBOSE=1', 'install'
 
     # Snow Leopard is not shipped with libc++abi. Manually build here.
     cd libcxxabi_buildpath/'lib' do
